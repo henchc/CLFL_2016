@@ -18,10 +18,10 @@ import itertools
 from nltk.tag.util import str2tuple
 
 
-with open("Data/Annotator 1 IAG.txt", "r") as f:
+with open("Data/CLFL_Annotator_1_IAA.txt", "r") as f:
     a1 = f.read()
     
-with open("Data/Annotator 2 IAG.txt", "r") as f:
+with open("Data/CLFL_Annotator_2_IAA.txt", "r") as f:
     a2 = f.read()
 
 

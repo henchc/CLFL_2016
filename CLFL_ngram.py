@@ -12,7 +12,7 @@ from nltk.tag import UnigramTagger
 from nltk.tag import BigramTagger
 from nltk.tag import TrigramTagger
 from nltk.tag import NgramTagger
-from mdf_classification import classification_report, confusion_matrix,precision_recall_fscore_support
+from CLFL_mdf_classification import classification_report, confusion_matrix,precision_recall_fscore_support
 from sklearn.preprocessing import LabelBinarizer
 import sklearn
 import itertools

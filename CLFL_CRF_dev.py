@@ -14,7 +14,7 @@ import nltk.tag
 from pickle import dump
 import itertools
 from itertools import chain
-from mdf_classification import classification_report, confusion_matrix,precision_recall_fscore_support
+from CLFL_mdf_classification import classification_report, confusion_matrix,precision_recall_fscore_support
 from sklearn.preprocessing import LabelBinarizer
 import sklearn
 import pycrfsuite
