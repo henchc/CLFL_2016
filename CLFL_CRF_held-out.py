@@ -103,9 +103,12 @@ def prepcrf(taggedstring):
         for i,tup in enumerate(line):
             if tup[0] == 'WBY':
                 pass
-            elif i == 0: #skip begl and first wby
+            elif i == 0:
                 lpos = "BEGL"
-                wpos = "WBYL"
+                if line[i+1][0] == "WBY":
+                    wpos = "MONO"
+                else:
+                    wpos = "WBYL"
                 finaltuple = (tup[0], tup[1], lpos, wpos, tup[2])
                 ltuples.append(finaltuple)
 
@@ -127,7 +130,10 @@ def prepcrf(taggedstring):
 
             elif i == len(line)-1:
                 lpos = "ENDL"
-                wpos = "WBYR"
+                if line[i-1][0] == "WBY":
+                    wpos = "MONO"
+                else:
+                    wpos = "WBYR"
                 finaltuple = (tup[0], tup[1], lpos, wpos, tup[2])
                 ltuples.append(finaltuple)
 
