@@ -3,6 +3,6 @@ Supervised Machine Learning for Hybrid Meter
 
 Dependencies:
 
-* sklearn
-* nltk
-* pycrfsuite
+* sklearn (pip install scikit-learn)
+* nltk (pip install nltk)
+* pycrfsuite (pip install python-crfsuite)
