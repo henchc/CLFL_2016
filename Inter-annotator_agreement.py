@@ -49,6 +49,7 @@ print(cm.pretty_format(sort_by_count=True, show_percents=False, truncate=9))
 _CORRELATION_METRICS = frozenset(['kendall_tau', 'spearman', 'pearson'])
 
 
+#from sklearn
 def kappa(y_true, y_pred, weights=None, allow_off_by_one=False):
     """
     Calculates the kappa inter-rater agreement between two the gold standard
