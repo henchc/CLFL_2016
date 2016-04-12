@@ -1,5 +1,8 @@
 # CLFL_2016
-Supervised Machine Learning for Hybrid Meter
+Title: Supervised Machine Learning for Hybrid Meter
+Authors: Alex Estes and Christopher Hench
+
+Data and source code for paper
 
 Dependencies:
 
