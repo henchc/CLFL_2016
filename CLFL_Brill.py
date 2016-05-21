@@ -2,7 +2,11 @@
 from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
-from __future__ import unicode_literals
+
+# Created at UC Berkeley 2015
+# Authors: Christopher Hench
+# ==============================================================================
+
 import codecs
 import itertools
 from itertools import chain
@@ -15,7 +19,8 @@ from nltk.tag import UnigramTagger
 from nltk.tag import BigramTagger
 from nltk.tag import TrigramTagger
 from nltk.tag import NgramTagger
-from CLFL_mdf_classification import classification_report, confusion_matrix, precision_recall_fscore_support
+from CLFL_mdf_classification import classification_report, confusion_matrix
+from CLFL_mdf_classficiation import precision_recall_fscore_support
 from sklearn.preprocessing import LabelBinarizer
 import sklearn
 import itertools
@@ -24,19 +29,16 @@ import re
 import random
 import numpy as np
 
-# created at UC Berkeley 2015
-# Authors: Christopher Hench
-
 
 def train_brill_tagger(tagged_sents):
 
     # The brill tagger module in NLTK.
     Template._cleartemplates()
     templates = brill24()  # or fntbl37
-    #default_tagger = nltk.DefaultTagger('MORA_HAUPT')
+    # default_tagger = nltk.DefaultTagger('MORA_HAUPT')
     patterns = [
-        #(r'(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)(a|e|i|o|u)', 'HALB_HAUPT'),
-        (r'(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)e(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)', 'MORA'),
+        (r'(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)e(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)',
+         'MORA'),
         (r'.*(a|e|i|o|u|ä|î|ô|ü)(a|e|i|o|u|ä|î|ô|ü)', 'DOPPEL'),
         (r'.*', 'MORA_HAUPT')]                     # default
     regex_tagger = nltk.RegexpTagger(patterns)
@@ -91,14 +93,14 @@ for i, inds in enumerate(test_inds):
 
     tagger = train_brill_tagger(train_lines)
 
-    # get report
+    # get report, from sklearn
     def bio_classification_report(y_true, y_pred):
         """
         Classification report for a list of BIO-encoded sequences.
         It computes token-level metrics and discards "O" labels.
 
-        Note that it requires scikit-learn 0.15+ (or a version from github master)
-        to calculate averages properly!
+        Note that it requires scikit-learn 0.15+ (or a version from
+        github master) to calculate averages properly!
         """
         lb = LabelBinarizer()
         y_true_combined = lb.fit_transform(list(chain.from_iterable(y_true)))
@@ -110,7 +112,8 @@ for i, inds in enumerate(test_inds):
 
         labs = [class_indices[cls] for cls in tagset]
 
-        return((precision_recall_fscore_support(y_true_combined, y_pred_combined,
+        return((precision_recall_fscore_support(y_true_combined,
+                                                y_pred_combined,
                                                 labels=labs,
                                                 average=None,
                                                 sample_weight=None)),
@@ -125,7 +128,7 @@ for i, inds in enumerate(test_inds):
 
     def y_test_f(tagged_sents):
         return [[tag for (word, tag) in line if tag not in take_out]
-                for line in tagged_sents]  # just grabbing a list of all the tags
+                for line in tagged_sents]  # list of all the tags
 
     def y_pred_f(tagger, corpus):
         # notice we first untag the sentence
@@ -169,7 +172,7 @@ for i, inds in enumerate(test_inds):
         "MORA_NEBEN"]
     abs_labels = [l for l in ext_labels if l not in all_labels]
 
-    #print(bio_classification_report(y_test, y_pred)[1])
+    # print(bio_classification_report(y_test, y_pred)[1])
 
     data = {
         "labels": all_labels,
@@ -217,7 +220,6 @@ for i, inds in enumerate(test_inds):
 
     print("Fold " + str(i) + " complete.\n")
 
-
 df_all["p_AVG"] = df_all.w_p / df_all.support
 df_all["r_AVG"] = df_all.w_r / df_all.support
 df_all["f1_AVG"] = df_all.w_f1 / df_all.support
@@ -231,6 +233,5 @@ df_all = df_all.drop("w_p", 1)
 df_all = df_all.drop("w_r", 1)
 df_all = df_all.drop("w_f1", 1)
 df_all = df_all.drop("w_tots", 1)
-
 
 print(df_all)
