@@ -1,17 +1,19 @@
-from __future__ import unicode_literals #for python2 compatibility
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 from __future__ import print_function
+
+# Created at UC Berkeley 2015
+# Authors: Christopher Hench
+# ==============================================================================
+
 import logging
 import numpy as np
 from scipy.stats import kendalltau, spearmanr, pearsonr
 from six import string_types
 from six.moves import xrange as range
 from sklearn.metrics import confusion_matrix, f1_score, SCORERS
-
-#created at UC Berkeley 2015
-#Authors: Christopher Hench
-
 import codecs
 import nltk
 import itertools
@@ -20,7 +22,7 @@ from nltk.tag.util import str2tuple
 
 with open("Data/CLFL_Annotator_1_IAA.txt", "r") as f:
     a1 = f.read()
-    
+
 with open("Data/CLFL_Annotator_2_IAA.txt", "r") as f:
     a2 = f.read()
 
@@ -28,14 +30,16 @@ with open("Data/CLFL_Annotator_2_IAA.txt", "r") as f:
 lines = a1.split('\n')
 
 a_tags = [[str2tuple(x) for x in line.split()] for line in lines]
-a_tags = [[x[1] for x in line if x[0] != "BEGL" and x[0] != "ENDL" and x[0] != "WBY"] for line in a_tags]
+a_tags = [[x[1] for x in line if x[0] != "BEGL" and x[
+    0] != "ENDL" and x[0] != "WBY"] for line in a_tags]
 a_tags = [item for sublist in a_tags for item in sublist]
 
 
 lines = a2.split('\n')
 
 h_tags = [[str2tuple(x) for x in line.split()] for line in lines]
-h_tags = [[x[1] for x in line if x[0] != "BEGL" and x[0] != "ENDL" and x[0] != "WBY"] for line in h_tags]
+h_tags = [[x[1] for x in line if x[0] != "BEGL" and x[
+    0] != "ENDL" and x[0] != "WBY"] for line in h_tags]
 h_tags = [item for sublist in h_tags for item in sublist]
 
 
@@ -43,13 +47,11 @@ cm = nltk.ConfusionMatrix(a_tags, h_tags)
 print(cm.pretty_format(sort_by_count=True, show_percents=False, truncate=9))
 
 
-
-
 # Constants
 _CORRELATION_METRICS = frozenset(['kendall_tau', 'spearman', 'pearson'])
 
 
-#from sklearn
+# from sklearn
 def kappa(y_true, y_pred, weights=None, allow_off_by_one=False):
     """
     Calculates the kappa inter-rater agreement between two the gold standard
@@ -82,8 +84,8 @@ def kappa(y_true, y_pred, weights=None, allow_off_by_one=False):
                            of how to calculate weighted Cohen's kappa.
 
     :type weights: str or numpy array
-    :param allow_off_by_one: If true, ratings that are off by one are counted as
-                             equal, and all other differences are reduced by
+    :param allow_off_by_one: If true, ratings that are off by one are counted
+                             as equal, and all other differences are reduced by
                              one. For example, 1 and 2 will be considered to be
                              equal, whereas 1 and 3 will have a difference of 1
                              for when building the weights matrix.
@@ -123,7 +125,7 @@ def kappa(y_true, y_pred, weights=None, allow_off_by_one=False):
     num_ratings = max_rating - min_rating + 1
     observed = confusion_matrix(y_true, y_pred,
                                 labels=list(range(num_ratings)))
-    print (observed)
+    print(observed)
     num_scored_items = float(len(y_true))
 
     # Build weight array if weren't passed one
@@ -222,4 +224,4 @@ for tag in h_tags:
         h_new.append(8)
 
 
-print("Kappa Coefficient = "+str(kappa(a_new, h_new)))
+print("Kappa Coefficient = " + str(kappa(a_new, h_new)))

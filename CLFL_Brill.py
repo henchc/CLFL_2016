@@ -20,7 +20,7 @@ from nltk.tag import BigramTagger
 from nltk.tag import TrigramTagger
 from nltk.tag import NgramTagger
 from CLFL_mdf_classification import classification_report, confusion_matrix
-from CLFL_mdf_classficiation import precision_recall_fscore_support
+from CLFL_mdf_classification import precision_recall_fscore_support
 from sklearn.preprocessing import LabelBinarizer
 import sklearn
 import itertools
@@ -37,7 +37,8 @@ def train_brill_tagger(tagged_sents):
     templates = brill24()  # or fntbl37
     # default_tagger = nltk.DefaultTagger('MORA_HAUPT')
     patterns = [
-        (r'(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)e(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)',
+        (r'''(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)e
+        (b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)''',
          'MORA'),
         (r'.*(a|e|i|o|u|ä|î|ô|ü)(a|e|i|o|u|ä|î|ô|ü)', 'DOPPEL'),
         (r'.*', 'MORA_HAUPT')]                     # default

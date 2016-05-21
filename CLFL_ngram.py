@@ -12,62 +12,65 @@ from nltk.tag import UnigramTagger
 from nltk.tag import BigramTagger
 from nltk.tag import TrigramTagger
 from nltk.tag import NgramTagger
-from CLFL_mdf_classification import classification_report, confusion_matrix,precision_recall_fscore_support
+from CLFL_mdf_classification import classification_report, confusion_matrix
+from CLFL_mdf_classification import precision_recall_fscore_support
 from sklearn.preprocessing import LabelBinarizer
 import sklearn
 import itertools
 import pandas as pd
-import re 
+import re
 import random
 import numpy as np
 
-#created at UC Berkeley 2015
-#Authors: Christopher Hench
+# created at UC Berkeley 2015
+# Authors: Christopher Hench
 
 
 def ngram_tagger(tagged_sents):
+    patterns = [
+        (r'''(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)e
+        (b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)''',
+         'MORA'),
+        (r'.*(a|e|i|o|u|ä|î|ô|ü)(a|e|i|o|u|ä|î|ô|ü)', 'DOPPEL'),
+        (r'.*', 'MORA_HAUPT')]               # default
+    regex_tagger = nltk.RegexpTagger(patterns)
 
-	patterns = [
-	 #(r'(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)(a|e|i|o|u)', 'HALB_HAUPT'),
-	 (r'(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)e(b|c|d|f|g|h|j|k|l|m|n||p|q|r|s|t|v|w|x|z)', 'MORA'),
-	 (r'.*(a|e|i|o|u|ä|î|ô|ü)(a|e|i|o|u|ä|î|ô|ü)', 'DOPPEL'),
-	(r'.*', 'MORA_HAUPT')]                     # default
-	regex_tagger = nltk.RegexpTagger(patterns)
+    tagger1 = UnigramTagger(tagged_sents, backoff=regex_tagger)
+    # cutoff = 3, if necessary
+    tagger2 = BigramTagger(tagged_sents, backoff=tagger1)
+    tagger3 = TrigramTagger(tagged_sents, backoff=tagger2)
 
-	tagger1 = UnigramTagger(tagged_sents, backoff=regex_tagger)
-	tagger2 = BigramTagger(tagged_sents, backoff=tagger1) #cutoff = 3, if necessary
-	tagger3 = TrigramTagger(tagged_sents, backoff=tagger2)
-
-	return tagger3
+    return tagger3
 
 
 with open("Data/CLFL_dev-data.txt", 'r', encoding='utf-8') as f:
-	tagged = f.read() #text must be clean
+    tagged = f.read()  # text must be clean
 
 tagged = tagged.split('\n')
 
 newlines = []
 for line in tagged:
-	nl = "BEGL/BEGL WBY/WBY " + line + " WBY/WBY ENDL/ENDL"
-	newlines.append(nl)
+    nl = "BEGL/BEGL WBY/WBY " + line + " WBY/WBY ENDL/ENDL"
+    newlines.append(nl)
 
 ftuples = []
 for line in newlines:
-	news = [nltk.tag.str2tuple(t) for t in line.split()]
-	if len(news) > 0:
-		ftuples.append(news)
+    news = [nltk.tag.str2tuple(t) for t in line.split()]
+    if len(news) > 0:
+        ftuples.append(news)
 
 
-#for 10 fold validation
+# for 10 fold validation
 num_folds = 10
-subset_size = int(len(ftuples)/num_folds)
+subset_size = int(len(ftuples) / num_folds)
 rand_all = random.sample(range(0, len(ftuples)), len(ftuples))
-test_inds = [rand_all[x:x+subset_size] for x in range(0, len(rand_all), subset_size)]
+test_inds = [rand_all[x:x + subset_size]
+             for x in range(0, len(rand_all), subset_size)]
 
-for i,inds in enumerate(test_inds):
+for i, inds in enumerate(test_inds):
 
     test_inds = inds
-    train_inds = list(set(range(0,len(ftuples))) - set(test_inds))
+    train_inds = list(set(range(0, len(ftuples))) - set(test_inds))
 
     test_lines = []
     train_lines = []
@@ -80,14 +83,14 @@ for i,inds in enumerate(test_inds):
 
     tagger = ngram_tagger(train_lines)
 
-    #get report
+    # get report
     def bio_classification_report(y_true, y_pred):
         """
         Classification report for a list of BIO-encoded sequences.
         It computes token-level metrics and discards "O" labels.
-        
-        Note that it requires scikit-learn 0.15+ (or a version from github master)
-        to calculate averages properly!
+
+        Note that it requires scikit-learn 0.15+ (or a version from
+        github master) to calculate averages properly!
         """
         lb = LabelBinarizer()
         y_true_combined = lb.fit_transform(list(chain.from_iterable(y_true)))
@@ -98,31 +101,35 @@ for i,inds in enumerate(test_inds):
         class_indices = {cls: idx for idx, cls in enumerate(lb.classes_)}
 
         labs = [class_indices[cls] for cls in tagset]
-            
-        return((precision_recall_fscore_support(y_true_combined, y_pred_combined,
-                                              labels = labs,
-                                              average=None,
-                                              sample_weight=None)),
-        (classification_report(
-            y_true_combined,
-            y_pred_combined,
-            labels = [class_indices[cls] for cls in tagset],
-            target_names = tagset,
-        )), labs)
-        
+
+        return((precision_recall_fscore_support(y_true_combined,
+                                                y_pred_combined,
+                                                labels=labs,
+                                                average=None,
+                                                sample_weight=None)),
+               (classification_report(
+                   y_true_combined,
+                   y_pred_combined,
+                   labels=[class_indices[cls] for cls in tagset],
+                   target_names=tagset,
+               )), labs)
+
     take_out = ["BEGL", "ENDL", "WBY"]
 
     def y_test_f(tagged_sents):
-        return [[tag for (word, tag) in line if tag not in take_out] for line in tagged_sents] #just grabbing a list of all the tags
+        return [[tag for (word, tag) in line if tag not in take_out]
+                for line in tagged_sents]  # list of all the tags
+
     def y_pred_f(tagger, corpus):
-        return [tagger.tag(nltk.tag.untag(sent)) for sent in corpus] #notice we first untag the sentence
+        # notice we first untag the sentence
+        return [tagger.tag(nltk.tag.untag(sent)) for sent in corpus]
 
     y_test = y_test_f(test_lines)
-    y_pred = y_test_f(y_pred_f(tagger,test_lines))
+    y_pred = y_test_f(y_pred_f(tagger, test_lines))
 
     bioc = bio_classification_report(y_test, y_pred)
 
-    #to parse
+    # to parse
     p, r, f1, s = bioc[0]
 
     tot_avgs = []
@@ -132,7 +139,7 @@ for i,inds in enumerate(test_inds):
               np.average(f1, weights=s)):
         tot_avgs.append(v)
 
-    toext = [0] * (len(s)-3)
+    toext = [0] * (len(s) - 3)
     tot_avgs.extend(toext)
 
     all_s = [sum(s)] * len(s)
@@ -144,39 +151,64 @@ for i,inds in enumerate(test_inds):
         if word.isupper():
             all_labels.append(word)
 
-    ext_labels = ["DOPPEL", "EL", "HALB", "HALB_HAUPT", "HALB_NEBEN", "MORA", "MORA_HAUPT", "MORA_NEBEN"]
+    ext_labels = [
+        "DOPPEL",
+        "EL",
+        "HALB",
+        "HALB_HAUPT",
+        "HALB_NEBEN",
+        "MORA",
+        "MORA_HAUPT",
+        "MORA_NEBEN"]
     abs_labels = [l for l in ext_labels if l not in all_labels]
 
-    #print(bio_classification_report(y_test, y_pred)[1])
+    # print(bio_classification_report(y_test, y_pred)[1])
 
-    data = {"labels":all_labels, "precision":p, "recall":r, "f1":f1, "support":s, "tots":tot_avgs, "all_s":all_s}
+    data = {
+        "labels": all_labels,
+        "precision": p,
+        "recall": r,
+        "f1": f1,
+        "support": s,
+        "tots": tot_avgs,
+        "all_s": all_s}
 
     df = pd.DataFrame(data)
 
-
     if len(abs_labels) > 0:
-        if "HALB_NEBEN" in abs_labels:        
-            line = pd.DataFrame({"labels":"HALB_NEBEN", "precision":0, "recall":0, "f1":0, "support":0, "tots":0, "all_s":0}, index=[4])
+        if "HALB_NEBEN" in abs_labels:
+            line = pd.DataFrame({"labels": "HALB_NEBEN",
+                                 "precision": 0,
+                                 "recall": 0,
+                                 "f1": 0,
+                                 "support": 0,
+                                 "tots": 0,
+                                 "all_s": 0},
+                                index=[4])
             df = pd.concat([df.ix[:3], line, df.ix[4:]]).reset_index(drop=True)
         if "EL" in abs_labels:
-            line = pd.DataFrame({"labels":"EL", "precision":0, "recall":0, "f1":0, "support":0, "tots":0, "all_s":0}, index=[1])
+            line = pd.DataFrame({"labels": "EL",
+                                 "precision": 0,
+                                 "recall": 0,
+                                 "f1": 0,
+                                 "support": 0,
+                                 "tots": 0,
+                                 "all_s": 0},
+                                index=[1])
             df = pd.concat([df.ix[0], line, df.ix[1:]]).reset_index(drop=True)
-
 
     df["w_p"] = df.precision * df.support
     df["w_r"] = df.recall * df.support
     df["w_f1"] = df.f1 * df.support
     df["w_tots"] = df.tots * df.all_s
 
-    #to add and average cross validation
+    # to add and average cross validation
     if i != 0:
         df_all = df_all.add(df, axis="labels", fill_value=0)
     else:
         df_all = df
 
-    print ("Fold " + str(i) + " complete.\n")
-
-
+    print("Fold " + str(i) + " complete.\n")
 
 
 df_all["p_AVG"] = df_all.w_p / df_all.support
@@ -194,4 +226,4 @@ df_all = df_all.drop("w_f1", 1)
 df_all = df_all.drop("w_tots", 1)
 
 
-print (df_all)
+print(df_all)
