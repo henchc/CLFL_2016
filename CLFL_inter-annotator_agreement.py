@@ -7,6 +7,10 @@ from __future__ import print_function
 # Created at UC Berkeley 2015
 # Authors: Christopher Hench
 # ==============================================================================
+'''This code presents the inter-annotator agreement matrix and
+Kappa coefficient for two annotators of MHG scansion based
+on the paper presented at the NAACL-CLFL 2016 by Christopher Hench
+and Alex Estes. This model is for tuning.'''
 
 import logging
 import numpy as np

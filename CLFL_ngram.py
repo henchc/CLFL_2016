@@ -3,6 +3,14 @@ from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
+# Created at UC Berkeley 2015
+# Authors: Christopher Hench
+# ==============================================================================
+'''This code trains and evaluates an n-gram tagger for MHG scansion based
+on the paper presented at the NAACL-CLFL 2016 by Christopher Hench and
+Alex Estes.'''
+
 import codecs
 import itertools
 from itertools import chain

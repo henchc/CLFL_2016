@@ -6,6 +6,9 @@ from __future__ import absolute_import
 # Created at UC Berkeley 2015
 # Authors: Christopher Hench
 # ==============================================================================
+'''This code presents summary statistics for MHG syllables used for scansion
+based on the paper presented at the NAACL-CLFL 2016 by Christopher Hench and
+Alex Estes.'''
 
 import pandas as pd
 from nltk.tag.util import str2tuple

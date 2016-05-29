@@ -7,6 +7,9 @@ from __future__ import print_function
 # Created at UC Berkeley 2015
 # Authors: Christopher Hench
 # ==============================================================================
+'''This code trains and evaluates a CRF model for MHG scansion based
+on the paper presented at the NAACL-CLFL 2016 by Christopher Hench and
+Alex Estes. This model is for the held-out data.'''
 
 import codecs
 import nltk
