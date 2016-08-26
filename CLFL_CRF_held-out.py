@@ -755,7 +755,6 @@ def bio_classification_report(y_true, y_pred):
 
 
 y_pred = [tagger.tag(xseq) for xseq in X_test]
-
 bioc = bio_classification_report(y_test, y_pred)
 
 p, r, f1, s = bioc[0]
