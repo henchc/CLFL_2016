@@ -1,5 +1,5 @@
 # NAACL-CLFL 2016
-Title: Supervised Machine Learning for Hybrid Meter <br>
+Title: <a href="http://www.aclweb.org/anthology/W/W16/W16-0201.pdf" target="_blank">Supervised Machine Learning for Hybrid Meter</a> <br>
 Authors: Alex Estes and Christopher Hench
 
 Abstract: <br>
